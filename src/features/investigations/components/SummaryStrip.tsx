@@ -69,24 +69,41 @@ export function SummaryStrip({
         <p className="text-2xl lg:text-3xl font-bold text-[var(--text)] mt-2 tracking-tight">
           {formatINR(recordedBalance)}
         </p>
-        <div className="mt-1.5 pt-1.5 border-t border-blue-100/80 flex items-center gap-1.5 text-xs font-medium text-amber-700">
-          <svg
-            className="w-3.5 h-3.5 text-amber-600 flex-shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-          <span className="leading-tight">
-            Before any unapproved credit adjustments
-          </span>
-        </div>
+        {recordedBalance === 0 ? (
+          <div className="mt-1.5 pt-1.5 border-t border-emerald-100 flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+            <svg
+              className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="leading-tight">
+              All verified obligations settled · Clean balance
+            </span>
+          </div>
+        ) : (
+          <div className="mt-1.5 pt-1.5 border-t border-blue-100/80 flex items-center gap-1.5 text-xs font-medium text-amber-700">
+            <svg
+              className="w-3.5 h-3.5 text-amber-600 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span className="leading-tight">
+              Before any unapproved credit adjustments
+            </span>
+          </div>
+        )}
       </div>
     </section>
   );

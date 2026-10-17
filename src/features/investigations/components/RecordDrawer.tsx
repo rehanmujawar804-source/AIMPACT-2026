@@ -8,10 +8,14 @@ export interface RecordDrawerProps {
   onClose: () => void;
   recordId: string | null;
   sourceRecords: {
+    purchase_orders?: Array<Record<string, unknown>>;
     invoices?: Array<Record<string, unknown>>;
+    dispatches?: Array<Record<string, unknown>>;
     deliveries?: Array<Record<string, unknown>>;
+    receipts?: Array<Record<string, unknown>>;
     payments?: Array<Record<string, unknown>>;
     credit_notes?: Array<Record<string, unknown>>;
+    imported?: Array<Record<string, unknown>>;
   };
 }
 
@@ -40,16 +44,41 @@ export function RecordDrawer({
   let matchedRecord: Record<string, unknown> | null = null;
   let recordType: string = "Unknown Document";
 
-  if (sourceRecords.invoices) {
-    const found = sourceRecords.invoices.find((r) => r.record_id === recordId || r.invoice_id === recordId);
+  if (sourceRecords.purchase_orders) {
+    const found = sourceRecords.purchase_orders.find(
+      (r) => r.record_id === recordId || r.po_id === recordId
+    );
+    if (found) {
+      matchedRecord = found;
+      recordType = "Purchase Order";
+    }
+  }
+
+  if (!matchedRecord && sourceRecords.invoices) {
+    const found = sourceRecords.invoices.find(
+      (r) => r.record_id === recordId || r.invoice_id === recordId
+    );
     if (found) {
       matchedRecord = found;
       recordType = "Commercial Tax Invoice";
     }
   }
 
-  if (!matchedRecord && sourceRecords.deliveries) {
-    const found = sourceRecords.deliveries.find((r) => r.record_id === recordId || r.delivery_id === recordId);
+  if (!matchedRecord && sourceRecords.dispatches) {
+    const found = sourceRecords.dispatches.find(
+      (r) => r.record_id === recordId || r.shipment_id === recordId
+    );
+    if (found) {
+      matchedRecord = found;
+      recordType = "Dispatch / Carrier Note";
+    }
+  }
+
+  if (!matchedRecord && (sourceRecords.deliveries || sourceRecords.receipts)) {
+    const list = sourceRecords.deliveries || sourceRecords.receipts;
+    const found = list?.find(
+      (r) => r.record_id === recordId || r.delivery_id === recordId || r.shipment_id === recordId
+    );
     if (found) {
       matchedRecord = found;
       recordType = "Proof of Delivery / Consignment Receipt";
@@ -57,7 +86,9 @@ export function RecordDrawer({
   }
 
   if (!matchedRecord && sourceRecords.payments) {
-    const found = sourceRecords.payments.find((r) => r.record_id === recordId || r.payment_id === recordId);
+    const found = sourceRecords.payments.find(
+      (r) => r.record_id === recordId || r.payment_id === recordId
+    );
     if (found) {
       matchedRecord = found;
       recordType = "Bank Payment Receipt";
@@ -65,10 +96,27 @@ export function RecordDrawer({
   }
 
   if (!matchedRecord && sourceRecords.credit_notes) {
-    const found = sourceRecords.credit_notes.find((r) => r.record_id === recordId || r.credit_note_id === recordId);
+    const found = sourceRecords.credit_notes.find(
+      (r) => r.record_id === recordId || r.credit_note_id === recordId
+    );
     if (found) {
       matchedRecord = found;
       recordType = "Credit Note";
+    }
+  }
+
+  if (!matchedRecord && sourceRecords.imported) {
+    const found = sourceRecords.imported.find((r) => r.record_id === recordId);
+    if (found) {
+      matchedRecord = found;
+      const cat = String(found.category || "");
+      if (cat.includes("order")) recordType = "Purchase Order (Imported)";
+      else if (cat.includes("invoice")) recordType = "Commercial Invoice (Imported)";
+      else if (cat.includes("dispatch")) recordType = "Dispatch Note (Imported)";
+      else if (cat.includes("receipt") || cat.includes("delivery")) recordType = "Proof of Delivery (Imported)";
+      else if (cat.includes("payment")) recordType = "Bank Payment (Imported)";
+      else if (cat.includes("credit")) recordType = "Credit Note (Imported)";
+      else recordType = "Imported Commercial Record";
     }
   }
 
@@ -155,13 +203,57 @@ export function RecordDrawer({
                   })}
                 </dl>
 
-                <div className="mt-6 p-4 rounded-lg bg-[var(--surface-muted)] border border-[var(--border)] space-y-2 text-xs text-[var(--text-secondary)]">
+                {/* Milestone 3 Safeguards: Specific Category & Provenance Notices */}
+                {recordType.includes("Dispatch") && (
+                  <div className="mt-4 p-3.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-900 space-y-1 text-xs">
+                    <span className="font-semibold text-xs flex items-center gap-1.5 text-blue-900">
+                      <svg className="w-4 h-4 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Dispatch Record Notice
+                    </span>
+                    <p className="text-[11px] text-blue-800 leading-relaxed">
+                      This record documents supplier carrier dispatch. Under ProofTrail audit principles, a dispatch record does NOT constitute proof of delivery (POD) or receipt acceptance by the buyer.
+                    </p>
+                  </div>
+                )}
+
+                {recordType.includes("Credit Note") && (
+                  <div className="mt-4 p-3.5 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 space-y-1 text-xs">
+                    <span className="font-semibold text-xs flex items-center gap-1.5 text-amber-900">
+                      <svg className="w-4 h-4 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      Credit Note Notice
+                    </span>
+                    <p className="text-[11px] text-amber-800 leading-relaxed">
+                      In accordance with ProofTrail reconciliation rules, an unapproved credit note request is not deducted from authoritative balances until formal credit authorization is confirmed.
+                    </p>
+                  </div>
+                )}
+
+                {matchedRecord.provenance === "imported_local" && (
+                  <div className="mt-4 p-3.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-900 space-y-1 text-xs">
+                    <span className="font-semibold text-xs flex items-center gap-1.5 text-indigo-900">
+                      <svg className="w-4 h-4 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Imported Evidence · Structurally Valid
+                    </span>
+                    <p className="text-[11px] text-indigo-800 leading-relaxed">
+                      This record passed local schema validation. Structural validity establishes correct formatting, not verified proof of external claims or dispute resolution.
+                    </p>
+                  </div>
+                )}
+
+                <div className="mt-4 p-4 rounded-lg bg-[var(--surface-muted)] border border-[var(--border)] space-y-2 text-xs text-[var(--text-secondary)]">
                   <span className="font-semibold text-[var(--text)] block uppercase tracking-wider text-[10px]">
                     Traceability Note
                   </span>
                   <p>
-                    This record was loaded directly from the validated commercial dataset. Its record identifier
-                    is referenced as mathematical proof for the corresponding finding.
+                    {matchedRecord.provenance === "imported_local"
+                      ? "Loaded from local user-imported file. Its record identifier is tracked in the Evidence Inventory."
+                      : "This record was loaded directly from the validated commercial dataset. Its record identifier is referenced as mathematical proof for the corresponding finding."}
                   </p>
                 </div>
               </div>
