@@ -1,0 +1,127 @@
+{
+  "case_id": "case_01_clean_delivery",
+  "title": "Clean Delivery Agreement",
+  "description": "Purchase order, invoice, dispatch, and signed receipt agree on 100 pcs. No quantity discrepancy exists.",
+  "dispute": {
+    "dispute_id": "DSP-2026-001",
+    "message": "Routine delivery verification for invoice INV-2026-001. Buyer requests confirmation of delivery records.",
+    "claimed_issue": "clean_delivery",
+    "invoice_id": "INV-2026-001",
+    "shipment_id": "SHP-2026-001"
+  },
+  "records": {
+    "purchase_orders": [
+      {
+        "record_id": "PO-REC-001",
+        "po_id": "PO-2026-001",
+        "buyer_id": "BUY-IND-01",
+        "supplier_id": "SUP-IND-01",
+        "item_id": "ITEM-STEEL-ROD",
+        "ordered_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "currency": "INR",
+        "date": "2026-10-10"
+      }
+    ],
+    "invoices": [
+      {
+        "record_id": "INV-REC-001",
+        "invoice_id": "INV-2026-001",
+        "po_id": "PO-2026-001",
+        "shipment_id": "SHP-2026-001",
+        "item_id": "ITEM-STEEL-ROD",
+        "invoiced_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "line_amount": 15000,
+        "currency": "INR",
+        "date": "2026-10-11"
+      }
+    ],
+    "dispatches": [
+      {
+        "record_id": "DSPT-REC-001",
+        "shipment_id": "SHP-2026-001",
+        "invoice_id": "INV-2026-001",
+        "item_id": "ITEM-STEEL-ROD",
+        "dispatched_qty": 100,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-11",
+        "date": "2026-10-11"
+      }
+    ],
+    "receipts": [
+      {
+        "record_id": "POD-REC-001",
+        "shipment_id": "SHP-2026-001",
+        "invoice_id": "INV-2026-001",
+        "item_id": "ITEM-STEEL-ROD",
+        "received_qty": 100,
+        "unit": "pcs",
+        "signed": true,
+        "receipt_date": "2026-10-12",
+        "date": "2026-10-12"
+      }
+    ],
+    "payments": [
+      {
+        "record_id": "PAY-REC-001",
+        "invoice_id": "INV-2026-001",
+        "amount": 15000,
+        "currency": "INR",
+        "payment_date": "2026-10-15",
+        "date": "2026-10-15",
+        "reference": "BANK-REF-9901"
+      }
+    ],
+    "credit_notes": []
+  },
+  "expected_findings": [
+    {
+      "finding_id": "FND-001-QTY",
+      "claim_id": "CLM-001",
+      "statement": "Invoiced quantity (100 pcs) matches signed receipt quantity (100 pcs) with zero discrepancy.",
+      "status": "SUPPORTED_BY_RECORDS",
+      "source_record_ids": [
+        "INV-REC-001",
+        "POD-REC-001"
+      ],
+      "calculation": {
+        "expression": "100 - 100",
+        "result": 0,
+        "unit": "pcs"
+      },
+      "assumptions": [
+        "Invoice INV-REC-001 and signed receipt POD-REC-001 represent the same commercial delivery for ITEM-STEEL-ROD."
+      ],
+      "limitations": [
+        "Verification applies strictly to the records supplied in this dataset."
+      ],
+      "next_step": "No further delivery verification required; records agree."
+    }
+  ],
+  "expected_calculations": {
+    "invoiced_minus_received": {
+      "expression": "100 - 100",
+      "result": 0,
+      "unit": "pcs"
+    },
+    "dispatched_minus_received": {
+      "expression": "100 - 100",
+      "result": 0,
+      "unit": "pcs"
+    },
+    "balance": {
+      "expression": "15000 - 15000 - 0",
+      "result": 0,
+      "unit": "INR"
+    }
+  },
+  "must_not_claim": [
+    "The transaction contains a short-delivery discrepancy.",
+    "The buyer withheld payment without justification.",
+    "Every physical item was inspected."
+  ]
+}
+

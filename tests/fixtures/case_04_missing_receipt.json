@@ -1,0 +1,95 @@
+{
+  "case_id": "case_04_missing_receipt",
+  "title": "Missing Proof of Delivery / Signed Receipt",
+  "description": "Dispatch record exists showing 100 pcs dispatched, but no signed receipt or proof of delivery is present in the provided dataset.",
+  "dispute": {
+    "dispute_id": "DSP-2026-004",
+    "message": "Payment withheld on invoice INV-2026-004. Goods allegedly not received, but supplier dispatch records show dispatch.",
+    "claimed_issue": "short_delivery",
+    "invoice_id": "INV-2026-004",
+    "shipment_id": "SHP-2026-004"
+  },
+  "records": {
+    "purchase_orders": [
+      {
+        "record_id": "PO-REC-004",
+        "po_id": "PO-2026-004",
+        "buyer_id": "BUY-IND-04",
+        "supplier_id": "SUP-IND-01",
+        "item_id": "ITEM-ALUM-SHEET",
+        "ordered_qty": 100,
+        "unit": "pcs",
+        "unit_price": 300,
+        "currency": "INR",
+        "date": "2026-10-10"
+      }
+    ],
+    "invoices": [
+      {
+        "record_id": "INV-REC-004",
+        "invoice_id": "INV-2026-004",
+        "po_id": "PO-2026-004",
+        "shipment_id": "SHP-2026-004",
+        "item_id": "ITEM-ALUM-SHEET",
+        "invoiced_qty": 100,
+        "unit": "pcs",
+        "unit_price": 300,
+        "line_amount": 30000,
+        "currency": "INR",
+        "date": "2026-10-11"
+      }
+    ],
+    "dispatches": [
+      {
+        "record_id": "DSPT-REC-004",
+        "shipment_id": "SHP-2026-004",
+        "invoice_id": "INV-2026-004",
+        "item_id": "ITEM-ALUM-SHEET",
+        "dispatched_qty": 100,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-11",
+        "date": "2026-10-11"
+      }
+    ],
+    "receipts": [],
+    "payments": [
+      {
+        "record_id": "PAY-REC-004",
+        "invoice_id": "INV-2026-004",
+        "amount": 0,
+        "currency": "INR",
+        "payment_date": "2026-10-15",
+        "date": "2026-10-15",
+        "reference": "BANK-REF-ZERO"
+      }
+    ],
+    "credit_notes": []
+  },
+  "expected_findings": [
+    {
+      "finding_id": "FND-004-POD-NOT-FOUND",
+      "claim_id": "CLM-004",
+      "statement": "No signed receipt or proof of delivery found in the provided dataset for shipment SHP-2026-004.",
+      "status": "NOT_FOUND_IN_PROVIDED_DATA",
+      "source_record_ids": [
+        "INV-REC-004",
+        "DSPT-REC-004"
+      ],
+      "calculation": null,
+      "assumptions": [
+        "Supplier dispatch record DSPT-REC-004 confirms recorded dispatch of 100 pcs on 2026-10-11."
+      ],
+      "limitations": [
+        "Absence of a signed receipt in the provided dataset does not establish whether physical delivery succeeded or failed."
+      ],
+      "next_step": "Obtain signed physical delivery acknowledgment or transporter electronic confirmation."
+    }
+  ],
+  "expected_calculations": {},
+  "must_not_claim": [
+    "The delivery conclusively failed.",
+    "The buyer received zero units in reality.",
+    "No proof of delivery exists outside the provided dataset."
+  ]
+}
+

@@ -1,0 +1,149 @@
+{
+  "case_id": "case_02_short_delivery",
+  "title": "Standard Short Delivery Dispute",
+  "description": "Invoice and dispatch record 100 pcs; signed receipt records 80 pcs. Discrepancy of 20 pcs with no credit note in dataset.",
+  "dispute": {
+    "dispute_id": "DSP-2026-002",
+    "message": "We received only 80 of the 100 units invoiced on INV-2026-002 under shipment SHP-2026-002. Shortage of 20 units.",
+    "claimed_issue": "short_delivery",
+    "invoice_id": "INV-2026-002",
+    "shipment_id": "SHP-2026-002"
+  },
+  "records": {
+    "purchase_orders": [
+      {
+        "record_id": "PO-REC-002",
+        "po_id": "PO-2026-002",
+        "buyer_id": "BUY-IND-02",
+        "supplier_id": "SUP-IND-01",
+        "item_id": "ITEM-VALVE-BRASS",
+        "ordered_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "currency": "INR",
+        "date": "2026-10-10"
+      }
+    ],
+    "invoices": [
+      {
+        "record_id": "INV-REC-002",
+        "invoice_id": "INV-2026-002",
+        "po_id": "PO-2026-002",
+        "shipment_id": "SHP-2026-002",
+        "item_id": "ITEM-VALVE-BRASS",
+        "invoiced_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "line_amount": 15000,
+        "currency": "INR",
+        "date": "2026-10-11"
+      }
+    ],
+    "dispatches": [
+      {
+        "record_id": "DSPT-REC-002",
+        "shipment_id": "SHP-2026-002",
+        "invoice_id": "INV-2026-002",
+        "item_id": "ITEM-VALVE-BRASS",
+        "dispatched_qty": 100,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-11",
+        "date": "2026-10-11"
+      }
+    ],
+    "receipts": [
+      {
+        "record_id": "POD-REC-002",
+        "shipment_id": "SHP-2026-002",
+        "invoice_id": "INV-2026-002",
+        "item_id": "ITEM-VALVE-BRASS",
+        "received_qty": 80,
+        "unit": "pcs",
+        "signed": true,
+        "receipt_date": "2026-10-12",
+        "date": "2026-10-12"
+      }
+    ],
+    "payments": [
+      {
+        "record_id": "PAY-REC-002",
+        "invoice_id": "INV-2026-002",
+        "amount": 12000,
+        "currency": "INR",
+        "payment_date": "2026-10-15",
+        "date": "2026-10-15",
+        "reference": "BANK-REF-9902"
+      }
+    ],
+    "credit_notes": []
+  },
+  "expected_findings": [
+    {
+      "finding_id": "FND-002-QTY-CONFLICT",
+      "claim_id": "CLM-002",
+      "statement": "Signed receipt records 80 pcs, conflicting with invoice quantity of 100 pcs (20 pcs shortage).",
+      "status": "CONFLICTING_RECORDS",
+      "source_record_ids": [
+        "INV-REC-002",
+        "POD-REC-002"
+      ],
+      "calculation": {
+        "expression": "100 - 80",
+        "result": 20,
+        "unit": "pcs"
+      },
+      "assumptions": [
+        "Invoice INV-REC-002 and signed receipt POD-REC-002 refer to the same delivery and item."
+      ],
+      "limitations": [
+        "Other deliveries or partial fulfillments may exist outside the supplied dataset."
+      ],
+      "next_step": "Verify whether a secondary shipment was dispatched or if a credit note was issued."
+    },
+    {
+      "finding_id": "FND-002-CREDIT-NOTE-MISSING",
+      "claim_id": "CLM-002",
+      "statement": "No credit note found in supplied records for invoice INV-2026-002.",
+      "status": "NOT_FOUND_IN_PROVIDED_DATA",
+      "source_record_ids": [
+        "INV-REC-002"
+      ],
+      "calculation": null,
+      "assumptions": [
+        "Credit notes, if issued, would be supplied in the investigation dataset."
+      ],
+      "limitations": [
+        "Absence of a credit note in supplied records does not prove an adjustment was never issued in physical reality."
+      ],
+      "next_step": "Request credit note documentation from supplier if an adjustment was agreed upon."
+    }
+  ],
+  "expected_calculations": {
+    "invoiced_minus_received": {
+      "expression": "100 - 80",
+      "result": 20,
+      "unit": "pcs"
+    },
+    "dispatched_minus_received": {
+      "expression": "100 - 80",
+      "result": 20,
+      "unit": "pcs"
+    },
+    "indicative_shortage_value": {
+      "expression": "20 * 150",
+      "result": 3000,
+      "unit": "INR"
+    },
+    "balance": {
+      "expression": "15000 - 12000 - 0",
+      "result": 3000,
+      "unit": "INR"
+    }
+  },
+  "must_not_claim": [
+    "The supplier deliberately short-shipped goods.",
+    "The buyer committed fraud or illegally withheld payment.",
+    "No credit note exists anywhere outside the provided dataset."
+  ]
+}
+

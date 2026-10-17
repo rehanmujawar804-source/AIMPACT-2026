@@ -1,0 +1,114 @@
+{
+  "investigation_id": "INV-RESP-2026-001",
+  "dispute_id": "DSP-2026-002",
+  "processing_mode": "hybrid",
+  "reconciliation": {
+    "invoice_amount": 15000,
+    "payments_recorded": 12000,
+    "credits_recorded": 0,
+    "balance_before_unapproved_credits": 3000,
+    "currency": "INR"
+  },
+  "findings": [
+    {
+      "finding_id": "FND-MOCK-001",
+      "claim_id": "CLM-001",
+      "statement": "Purchase order PO-REC-002 and invoice INV-REC-002 agree on ordered quantity of 100 pcs at ₹150/pc.",
+      "status": "SUPPORTED_BY_RECORDS",
+      "source_record_ids": [
+        "PO-REC-002",
+        "INV-REC-002"
+      ],
+      "calculation": {
+        "expression": "100 * 150",
+        "result": 15000,
+        "unit": "INR"
+      },
+      "assumptions": [
+        "Unit price and currency match purchase order terms."
+      ],
+      "limitations": [
+        "Does not account for unmodelled GST or freight adjustments."
+      ],
+      "next_step": "Verify dispatch details against supplier warehouse records."
+    },
+    {
+      "finding_id": "FND-MOCK-002",
+      "claim_id": "CLM-002",
+      "statement": "Signed receipt records 80 pcs, conflicting with invoice quantity of 100 pcs (20 pcs shortage).",
+      "status": "CONFLICTING_RECORDS",
+      "source_record_ids": [
+        "INV-REC-002",
+        "POD-REC-002"
+      ],
+      "calculation": {
+        "expression": "100 - 80",
+        "result": 20,
+        "unit": "pcs"
+      },
+      "assumptions": [
+        "Invoice INV-REC-002 and signed receipt POD-REC-002 refer to item ITEM-VALVE-BRASS."
+      ],
+      "limitations": [
+        "Secondary shipments outside current dataset are not reflected."
+      ],
+      "next_step": "Request delivery transporter consignment note."
+    },
+    {
+      "finding_id": "FND-MOCK-003",
+      "claim_id": "CLM-003",
+      "statement": "No credit note found in provided dataset for invoice INV-2026-002.",
+      "status": "NOT_FOUND_IN_PROVIDED_DATA",
+      "source_record_ids": [
+        "INV-REC-002"
+      ],
+      "calculation": null,
+      "assumptions": [
+        "Credit adjustments would be provided in credit_notes collection."
+      ],
+      "limitations": [
+        "Absence in provided records does not establish whether an adjustment exists externally."
+      ],
+      "next_step": "Inquire with supplier accounting desk whether a credit memo was issued."
+    },
+    {
+      "finding_id": "FND-MOCK-004",
+      "claim_id": "CLM-004",
+      "statement": "Transporter carrier damage remark on receipt POD-REC-002 lacks formal inspection report; physical loss attribution remains unresolved.",
+      "status": "UNRESOLVED",
+      "source_record_ids": [
+        "POD-REC-002"
+      ],
+      "calculation": null,
+      "assumptions": [
+        "Carrier remark indicates package was inspected during transit."
+      ],
+      "limitations": [
+        "No joint survey or formal carrier insurance inspection report provided."
+      ],
+      "next_step": "Request transit damage survey report from carrier."
+    }
+  ],
+  "candidate_matches": [
+    {
+      "record_id": "INV-REC-002",
+      "match_type": "EXPLICIT_ID",
+      "confidence": "HIGH"
+    },
+    {
+      "record_id": "POD-REC-002",
+      "match_type": "SHIPMENT_REFERENCE",
+      "confidence": "HIGH"
+    }
+  ],
+  "unresolved_questions": [
+    "Was a secondary delivery scheduled for the remaining 20 pcs?",
+    "Has a formal short-delivery debit note been communicated outside the provided documents?"
+  ],
+  "evaluation_metadata": {
+    "mode": "hybrid",
+    "model_used": "assistive-extractor-v1",
+    "fallback_used": false
+  }
+}
+

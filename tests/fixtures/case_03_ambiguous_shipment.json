@@ -1,0 +1,109 @@
+{
+  "case_id": "case_03_ambiguous_shipment",
+  "title": "Ambiguous Shipment Candidates",
+  "description": "Two candidate shipments exist for the same invoice and item. The signed receipt does not reference a specific shipment ID, creating an unresolved match.",
+  "dispute": {
+    "dispute_id": "DSP-2026-003",
+    "message": "We received only 50 units for invoice INV-2026-003, but two shipments were dispatched around the same time and we cannot identify which one this applies to.",
+    "claimed_issue": "short_delivery",
+    "invoice_id": "INV-2026-003",
+    "shipment_id": null
+  },
+  "records": {
+    "purchase_orders": [
+      {
+        "record_id": "PO-REC-003",
+        "po_id": "PO-2026-003",
+        "buyer_id": "BUY-IND-03",
+        "supplier_id": "SUP-IND-01",
+        "item_id": "ITEM-COPPER-WIRE",
+        "ordered_qty": 100,
+        "unit": "pcs",
+        "unit_price": 200,
+        "currency": "INR",
+        "date": "2026-10-10"
+      }
+    ],
+    "invoices": [
+      {
+        "record_id": "INV-REC-003",
+        "invoice_id": "INV-2026-003",
+        "po_id": "PO-2026-003",
+        "shipment_id": null,
+        "item_id": "ITEM-COPPER-WIRE",
+        "invoiced_qty": 100,
+        "unit": "pcs",
+        "unit_price": 200,
+        "line_amount": 20000,
+        "currency": "INR",
+        "date": "2026-10-11"
+      }
+    ],
+    "dispatches": [
+      {
+        "record_id": "DSPT-REC-003A",
+        "shipment_id": "SHP-2026-003A",
+        "invoice_id": "INV-2026-003",
+        "item_id": "ITEM-COPPER-WIRE",
+        "dispatched_qty": 50,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-11",
+        "date": "2026-10-11"
+      },
+      {
+        "record_id": "DSPT-REC-003B",
+        "shipment_id": "SHP-2026-003B",
+        "invoice_id": "INV-2026-003",
+        "item_id": "ITEM-COPPER-WIRE",
+        "dispatched_qty": 50,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-12",
+        "date": "2026-10-12"
+      }
+    ],
+    "receipts": [
+      {
+        "record_id": "POD-REC-003",
+        "shipment_id": null,
+        "invoice_id": "INV-2026-003",
+        "item_id": "ITEM-COPPER-WIRE",
+        "received_qty": 50,
+        "unit": "pcs",
+        "signed": true,
+        "receipt_date": "2026-10-13",
+        "date": "2026-10-13"
+      }
+    ],
+    "payments": [],
+    "credit_notes": []
+  },
+  "expected_findings": [
+    {
+      "finding_id": "FND-003-SHIPMENT-AMBIGUOUS",
+      "claim_id": "CLM-003",
+      "statement": "Multiple candidate shipments (SHP-2026-003A, SHP-2026-003B) match invoice INV-2026-003; shipment attribution remains unresolved.",
+      "status": "UNRESOLVED",
+      "source_record_ids": [
+        "INV-REC-003",
+        "DSPT-REC-003A",
+        "DSPT-REC-003B",
+        "POD-REC-003"
+      ],
+      "calculation": null,
+      "assumptions": [
+        "Receipt POD-REC-003 covers one of the two dispatches but lacks an explicit shipment identifier."
+      ],
+      "limitations": [
+        "Deterministic matcher cannot arbitrarily select between two equally plausible shipments without an explicit shipment reference."
+      ],
+      "next_step": "Request explicit consignment note or lorry receipt number linking receipt POD-REC-003 to either SHP-2026-003A or SHP-2026-003B."
+    }
+  ],
+  "expected_calculations": {},
+  "must_not_claim": [
+    "Shipment SHP-2026-003A is the confirmed match merely because its date is closer.",
+    "A single shipment match is verified.",
+    "The supplier failed to deliver."
+  ]
+}
+
