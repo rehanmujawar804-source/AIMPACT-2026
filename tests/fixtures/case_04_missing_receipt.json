@@ -1,0 +1,89 @@
+{
+  "case_id": "case_04",
+  "title": "Missing Receipt Evidence",
+  "description": "Invoice and dispatch records record 100 pcs dispatched under shipment SHP-004. However, no signed proof of delivery or receipt record exists in the supplied dataset.",
+  "dispute": {
+    "dispute_id": "DSP-004",
+    "message": "Buyer claims goods were never delivered for invoice INV-004. No delivery acknowledgment found.",
+    "claimed_issue": "missing_goods",
+    "invoice_id": "INV-004",
+    "shipment_id": "SHP-004"
+  },
+  "records": {
+    "purchase_orders": [
+      {
+        "record_id": "PO-REC-004",
+        "po_id": "PO-004",
+        "buyer_id": "BUY-001",
+        "supplier_id": "SUP-001",
+        "item_id": "ITEM-01",
+        "ordered_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "currency": "INR",
+        "date": "2026-10-15"
+      }
+    ],
+    "invoices": [
+      {
+        "record_id": "INV-REC-004",
+        "invoice_id": "INV-004",
+        "po_id": "PO-004",
+        "shipment_id": "SHP-004",
+        "item_id": "ITEM-01",
+        "invoiced_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "line_amount": 15000,
+        "currency": "INR",
+        "date": "2026-10-16"
+      }
+    ],
+    "dispatches": [
+      {
+        "record_id": "DSPT-REC-004",
+        "shipment_id": "SHP-004",
+        "invoice_id": "INV-004",
+        "item_id": "ITEM-01",
+        "dispatched_qty": 100,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-16"
+      }
+    ],
+    "receipts": [],
+    "payments": [],
+    "credit_notes": []
+  },
+  "expected_results": {
+    "finding_statuses": [
+      "NOT_FOUND_IN_PROVIDED_DATA"
+    ],
+    "expected_findings": [
+      {
+        "finding_id": "FND-005",
+        "claim_id": "CLM-004",
+        "statement": "No signed proof-of-delivery or receipt record found in supplied dataset for shipment SHP-004.",
+        "status": "NOT_FOUND_IN_PROVIDED_DATA",
+        "source_record_ids": [
+          "INV-REC-004",
+          "DSPT-REC-004"
+        ],
+        "calculation": null,
+        "assumptions": [
+          "Dispatch record DSPT-REC-004 confirms carrier handover on 2026-10-16."
+        ],
+        "limitations": [
+          "Absence in this dataset does not prove physical delivery failed or that no receipt exists elsewhere."
+        ],
+        "next_step": "Request courier consignment tracking or physical gate-entry receipt from buyer warehouse."
+      }
+    ],
+    "expected_calculation": null,
+    "unresolved_questions": [
+      "Was the consignment delivered and signed for by personnel outside the recorded system?",
+      "Is delivery currently in transit with logistics carrier?"
+    ],
+    "needs_human_review": true
+  }
+}
+

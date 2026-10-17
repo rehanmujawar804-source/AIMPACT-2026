@@ -1,0 +1,21 @@
+{
+  "dispute_id": "DSP-002",
+  "issue_type": "short_delivery",
+  "claimed_qty": 20,
+  "unit": "pcs",
+  "claimed_amount": 3000,
+  "currency": "INR",
+  "mentioned_invoice_id": "INV-002",
+  "mentioned_shipment_id": "SHP-002",
+  "claim_text_span": "We received only 80 of the 100 units invoiced on INV-002. Please issue a credit note for 20 units.",
+  "field_provenance": {
+    "claimed_qty": "derived",
+    "unit": "explicit",
+    "claimed_amount": "unknown",
+    "mentioned_invoice_id": "explicit",
+    "mentioned_shipment_id": "explicit"
+  },
+  "missing_fields": [],
+  "needs_human_review": true
+}
+

@@ -1,0 +1,120 @@
+{
+  "case_id": "case_03",
+  "title": "Ambiguous Shipment Candidates",
+  "description": "Two distinct shipments (SHP-003A and SHP-003B) exist under PO-003 with similar dates. The dispute message does not specify which shipment was disputed, creating an unresolved match.",
+  "dispute": {
+    "dispute_id": "DSP-003",
+    "message": "We only received partial quantity for our October order PO-003. Please check the delivery status.",
+    "claimed_issue": "short_delivery",
+    "invoice_id": "INV-003",
+    "shipment_id": null
+  },
+  "records": {
+    "purchase_orders": [
+      {
+        "record_id": "PO-REC-003",
+        "po_id": "PO-003",
+        "buyer_id": "BUY-001",
+        "supplier_id": "SUP-001",
+        "item_id": "ITEM-01",
+        "ordered_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "currency": "INR",
+        "date": "2026-10-10"
+      }
+    ],
+    "invoices": [
+      {
+        "record_id": "INV-REC-003",
+        "invoice_id": "INV-003",
+        "po_id": "PO-003",
+        "shipment_id": null,
+        "item_id": "ITEM-01",
+        "invoiced_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "line_amount": 15000,
+        "currency": "INR",
+        "date": "2026-10-11"
+      }
+    ],
+    "dispatches": [
+      {
+        "record_id": "DSPT-REC-003A",
+        "shipment_id": "SHP-003A",
+        "invoice_id": "INV-003",
+        "item_id": "ITEM-01",
+        "dispatched_qty": 50,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-12"
+      },
+      {
+        "record_id": "DSPT-REC-003B",
+        "shipment_id": "SHP-003B",
+        "invoice_id": "INV-003",
+        "item_id": "ITEM-01",
+        "dispatched_qty": 50,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-14"
+      }
+    ],
+    "receipts": [
+      {
+        "record_id": "POD-REC-003A",
+        "shipment_id": "SHP-003A",
+        "invoice_id": "INV-003",
+        "item_id": "ITEM-01",
+        "received_qty": 50,
+        "unit": "pcs",
+        "signed": true,
+        "receipt_date": "2026-10-14"
+      },
+      {
+        "record_id": "POD-REC-003B",
+        "shipment_id": "SHP-003B",
+        "invoice_id": "INV-003",
+        "item_id": "ITEM-01",
+        "received_qty": 30,
+        "unit": "pcs",
+        "signed": true,
+        "receipt_date": "2026-10-16"
+      }
+    ],
+    "payments": [],
+    "credit_notes": []
+  },
+  "expected_results": {
+    "finding_statuses": [
+      "UNRESOLVED"
+    ],
+    "expected_findings": [
+      {
+        "finding_id": "FND-004",
+        "claim_id": "CLM-003",
+        "statement": "Multiple candidate shipments (SHP-003A: 50 pcs, SHP-003B: 30 pcs) found under PO-003. Dispute message does not provide a specific shipment identifier.",
+        "status": "UNRESOLVED",
+        "source_record_ids": [
+          "DSPT-REC-003A",
+          "DSPT-REC-003B",
+          "POD-REC-003A",
+          "POD-REC-003B"
+        ],
+        "calculation": null,
+        "assumptions": [
+          "Dispute refers to either partial delivery under SHP-003B (30/50 pcs) or aggregate order delivery."
+        ],
+        "limitations": [
+          "System cannot automatically select one candidate shipment without human confirmation."
+        ],
+        "next_step": "Obtain clarification from buyer on whether the dispute applies to shipment SHP-003A, SHP-003B, or both."
+      }
+    ],
+    "expected_calculation": null,
+    "unresolved_questions": [
+      "Which specific shipment reference (SHP-003A or SHP-003B) is the buyer contesting?"
+    ],
+    "needs_human_review": true
+  }
+}
+

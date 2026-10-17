@@ -1,0 +1,133 @@
+{
+  "case_id": "case_02",
+  "title": "Short Delivery Quantity Discrepancy",
+  "description": "Standard dispute: 100 pcs invoiced, 100 pcs dispatched, signed receipt shows only 80 pcs received. Net shortage of 20 pcs. No credit note found.",
+  "dispute": {
+    "dispute_id": "DSP-002",
+    "message": "We received only 80 of the 100 units invoiced on INV-002. Please issue a credit note for 20 units.",
+    "claimed_issue": "short_delivery",
+    "invoice_id": "INV-002",
+    "shipment_id": "SHP-002"
+  },
+  "records": {
+    "purchase_orders": [
+      {
+        "record_id": "PO-REC-002",
+        "po_id": "PO-002",
+        "buyer_id": "BUY-001",
+        "supplier_id": "SUP-001",
+        "item_id": "ITEM-01",
+        "ordered_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "currency": "INR",
+        "date": "2026-10-10"
+      }
+    ],
+    "invoices": [
+      {
+        "record_id": "INV-REC-002",
+        "invoice_id": "INV-002",
+        "po_id": "PO-002",
+        "shipment_id": "SHP-002",
+        "item_id": "ITEM-01",
+        "invoiced_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "line_amount": 15000,
+        "currency": "INR",
+        "date": "2026-10-11"
+      }
+    ],
+    "dispatches": [
+      {
+        "record_id": "DSPT-REC-002",
+        "shipment_id": "SHP-002",
+        "invoice_id": "INV-002",
+        "item_id": "ITEM-01",
+        "dispatched_qty": 100,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-11"
+      }
+    ],
+    "receipts": [
+      {
+        "record_id": "POD-REC-002",
+        "shipment_id": "SHP-002",
+        "invoice_id": "INV-002",
+        "item_id": "ITEM-01",
+        "received_qty": 80,
+        "unit": "pcs",
+        "signed": true,
+        "receipt_date": "2026-10-12"
+      }
+    ],
+    "payments": [
+      {
+        "record_id": "PAY-REC-002",
+        "invoice_id": "INV-002",
+        "amount": 12000,
+        "currency": "INR",
+        "payment_date": "2026-10-15",
+        "reference": "BANK-REF-002"
+      }
+    ],
+    "credit_notes": []
+  },
+  "expected_results": {
+    "finding_statuses": [
+      "CONFLICTING_RECORDS",
+      "NOT_FOUND_IN_PROVIDED_DATA"
+    ],
+    "expected_findings": [
+      {
+        "finding_id": "FND-002",
+        "claim_id": "CLM-002",
+        "statement": "Delivery shortage of 20 pcs between invoice INV-REC-002 (100 pcs) and signed receipt POD-REC-002 (80 pcs).",
+        "status": "CONFLICTING_RECORDS",
+        "source_record_ids": [
+          "INV-REC-002",
+          "POD-REC-002"
+        ],
+        "calculation": {
+          "expression": "100 - 80",
+          "result": 20,
+          "unit": "pcs"
+        },
+        "assumptions": [
+          "Both records refer to item ITEM-01 under shipment SHP-002."
+        ],
+        "limitations": [
+          "Other deliveries or adjustments may exist outside the supplied dataset."
+        ],
+        "next_step": "Verify whether the receipt covers the complete shipment or request credit note for 20 pcs."
+      },
+      {
+        "finding_id": "FND-003",
+        "claim_id": "CLM-002",
+        "statement": "No credit note found in provided records for the 20 pcs shortage on invoice INV-002.",
+        "status": "NOT_FOUND_IN_PROVIDED_DATA",
+        "source_record_ids": [
+          "INV-REC-002"
+        ],
+        "calculation": null,
+        "assumptions": [],
+        "limitations": [
+          "A credit note may have been issued in a separate accounting cycle outside this dataset."
+        ],
+        "next_step": "Contact supplier accounts to confirm if a credit note has been issued or approved."
+      }
+    ],
+    "expected_calculation": {
+      "expression": "100 - 80",
+      "result": 20,
+      "unit": "pcs"
+    },
+    "unresolved_questions": [
+      "Does signed receipt POD-REC-002 represent a partial delivery with a subsequent batch pending?",
+      "Was a credit note issued outside the supplied records?"
+    ],
+    "needs_human_review": true
+  }
+}
+

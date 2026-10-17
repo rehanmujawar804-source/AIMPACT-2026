@@ -1,0 +1,149 @@
+{
+  "investigation_id": "INVEST-MOCK-001",
+  "dispute_id": "DSP-002",
+  "claim_extraction": {
+    "dispute_id": "DSP-002",
+    "issue_type": "short_delivery",
+    "claimed_qty": 20,
+    "unit": "pcs",
+    "claimed_amount": 3000,
+    "currency": "INR",
+    "mentioned_invoice_id": "INV-002",
+    "mentioned_shipment_id": "SHP-002",
+    "claim_text_span": "We received only 80 of the 100 units invoiced on INV-002. Please issue a credit note for 20 units.",
+    "field_provenance": {
+      "claimed_qty": "derived",
+      "unit": "explicit",
+      "claimed_amount": "unknown",
+      "mentioned_invoice_id": "explicit",
+      "mentioned_shipment_id": "explicit"
+    },
+    "missing_fields": [],
+    "needs_human_review": true
+  },
+  "candidate_matches": [
+    {
+      "candidate_id": "CAND-001",
+      "record_id": "INV-REC-002",
+      "record_type": "invoice",
+      "match_status": "CONFIRMED_MATCH",
+      "match_reasons": [
+        "Invoice ID matches buyer dispute claim explicitly."
+      ],
+      "requires_review": false
+    },
+    {
+      "candidate_id": "CAND-002",
+      "record_id": "POD-REC-002",
+      "record_type": "receipt",
+      "match_status": "CONFIRMED_MATCH",
+      "match_reasons": [
+        "Shipment reference SHP-002 links directly to invoice INV-002."
+      ],
+      "requires_review": false
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "FND-001",
+      "claim_id": "CLM-001",
+      "statement": "Line-item invoice arithmetic is mathematically verified (100 pcs × ₹150 = ₹15,000).",
+      "status": "SUPPORTED_BY_RECORDS",
+      "source_record_ids": [
+        "INV-REC-002"
+      ],
+      "calculation": {
+        "expression": "100 * 150",
+        "result": 15000,
+        "unit": "INR"
+      },
+      "assumptions": [
+        "Pre-tax and pre-discount line computation as recorded."
+      ],
+      "limitations": [
+        "Does not constitute full tax or ledger reconciliation."
+      ],
+      "next_step": null
+    },
+    {
+      "finding_id": "FND-002",
+      "claim_id": "CLM-002",
+      "statement": "Recorded delivery shortage of 20 pcs between invoice INV-REC-002 (100 pcs) and signed receipt POD-REC-002 (80 pcs).",
+      "status": "CONFLICTING_RECORDS",
+      "source_record_ids": [
+        "INV-REC-002",
+        "POD-REC-002"
+      ],
+      "calculation": {
+        "expression": "100 - 80",
+        "result": 20,
+        "unit": "pcs"
+      },
+      "assumptions": [
+        "Both records relate to the same shipment SHP-002 and item ITEM-01."
+      ],
+      "limitations": [
+        "Other deliveries or back-orders may exist outside supplied records."
+      ],
+      "next_step": "Verify whether the receipt covers the complete shipment or request a credit note for 20 pcs."
+    },
+    {
+      "finding_id": "FND-003",
+      "claim_id": "CLM-002",
+      "statement": "No credit note found in supplied dataset for the ₹3,000 difference (20 pcs shortage).",
+      "status": "NOT_FOUND_IN_PROVIDED_DATA",
+      "source_record_ids": [
+        "INV-REC-002"
+      ],
+      "calculation": {
+        "expression": "20 * 150",
+        "result": 3000,
+        "unit": "INR"
+      },
+      "assumptions": [],
+      "limitations": [
+        "Absence in dataset does not prove a credit note was never created in external systems."
+      ],
+      "next_step": "Contact supplier accounts to verify if credit note was issued outside current records."
+    },
+    {
+      "finding_id": "FND-004",
+      "claim_id": "CLM-003",
+      "statement": "Recorded payment of ₹12,000 leaves ₹3,000 balance; cause of deduction is unconfirmed in payment remarks.",
+      "status": "UNRESOLVED",
+      "source_record_ids": [
+        "INV-REC-002",
+        "PAY-REC-002"
+      ],
+      "calculation": {
+        "expression": "15000 - 12000",
+        "result": 3000,
+        "unit": "INR"
+      },
+      "assumptions": [
+        "Payment is tentatively linked to invoice INV-002 based on customer account reference."
+      ],
+      "limitations": [
+        "Bank reference does not explicitly state that the ₹3,000 deduction is for delivery shortage."
+      ],
+      "next_step": "Obtain payment advice or debit note from buyer to verify reason for ₹3,000 deduction."
+    }
+  ],
+  "reconciliation": {
+    "invoice_amount": 15000,
+    "payments_recorded": 12000,
+    "credit_notes_recorded": 0,
+    "calculated_balance": 3000,
+    "currency": "INR"
+  },
+  "unresolved_questions": [
+    "Does signed receipt POD-REC-002 cover the full delivery or was there a second split dispatch?",
+    "Was an unlinked credit note issued under a different invoice reference?"
+  ],
+  "evaluation_metadata": {
+    "mode": "hybrid",
+    "model_used": "mock-extractor-v1",
+    "fallback_used": false
+  }
+}
+

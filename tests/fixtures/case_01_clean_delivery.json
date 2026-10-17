@@ -1,0 +1,114 @@
+{
+  "case_id": "case_01",
+  "title": "Clean Agreement & Delivery",
+  "description": "Invoice records 100 pcs, signed receipt records 100 pcs. No quantity discrepancy. Records fully agree.",
+  "dispute": {
+    "dispute_id": "DSP-001",
+    "message": "Routine audit reconciliation for invoice INV-001 delivery verification.",
+    "claimed_issue": "clean_delivery",
+    "invoice_id": "INV-001",
+    "shipment_id": "SHP-001"
+  },
+  "records": {
+    "purchase_orders": [
+      {
+        "record_id": "PO-REC-001",
+        "po_id": "PO-001",
+        "buyer_id": "BUY-001",
+        "supplier_id": "SUP-001",
+        "item_id": "ITEM-01",
+        "ordered_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "currency": "INR",
+        "date": "2026-10-01"
+      }
+    ],
+    "invoices": [
+      {
+        "record_id": "INV-REC-001",
+        "invoice_id": "INV-001",
+        "po_id": "PO-001",
+        "shipment_id": "SHP-001",
+        "item_id": "ITEM-01",
+        "invoiced_qty": 100,
+        "unit": "pcs",
+        "unit_price": 150,
+        "line_amount": 15000,
+        "currency": "INR",
+        "date": "2026-10-05"
+      }
+    ],
+    "dispatches": [
+      {
+        "record_id": "DSPT-REC-001",
+        "shipment_id": "SHP-001",
+        "invoice_id": "INV-001",
+        "item_id": "ITEM-01",
+        "dispatched_qty": 100,
+        "unit": "pcs",
+        "dispatch_date": "2026-10-06"
+      }
+    ],
+    "receipts": [
+      {
+        "record_id": "POD-REC-001",
+        "shipment_id": "SHP-001",
+        "invoice_id": "INV-001",
+        "item_id": "ITEM-01",
+        "received_qty": 100,
+        "unit": "pcs",
+        "signed": true,
+        "receipt_date": "2026-10-08"
+      }
+    ],
+    "payments": [
+      {
+        "record_id": "PAY-REC-001",
+        "invoice_id": "INV-001",
+        "amount": 15000,
+        "currency": "INR",
+        "payment_date": "2026-10-15",
+        "reference": "BANK-REF-001"
+      }
+    ],
+    "credit_notes": []
+  },
+  "expected_results": {
+    "finding_statuses": [
+      "SUPPORTED_BY_RECORDS"
+    ],
+    "expected_findings": [
+      {
+        "finding_id": "FND-001",
+        "claim_id": "CLM-001",
+        "statement": "Invoiced quantity of 100 pcs matches verified delivery receipt POD-REC-001 (100 pcs).",
+        "status": "SUPPORTED_BY_RECORDS",
+        "source_record_ids": [
+          "INV-REC-001",
+          "POD-REC-001"
+        ],
+        "calculation": {
+          "expression": "100 - 100",
+          "result": 0,
+          "unit": "pcs"
+        },
+        "assumptions": [
+          "Both records reference item ITEM-01 under shipment SHP-001."
+        ],
+        "limitations": [
+          "Verification is limited to supplied records in this dataset."
+        ],
+        "next_step": null
+      }
+    ],
+    "expected_calculation": {
+      "expression": "100 - 100",
+      "result": 0,
+      "unit": "pcs"
+    },
+    "unresolved_questions": [],
+    "needs_human_review": false
+  }
+}
+
