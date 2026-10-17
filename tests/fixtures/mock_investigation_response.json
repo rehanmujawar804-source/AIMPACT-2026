@@ -1,0 +1,148 @@
+{
+  "investigation_id": "INV-DISP-2026-004",
+  "dispute": {
+    "dispute_id": "DSP-2026-004",
+    "message": "We received only 110 units instead of the 120 invoiced on INV-1048. Please issue a credit note for the missing 10 units.",
+    "claimed_issue": "short_delivery",
+    "invoice_id": "INV-1048",
+    "shipment_id": "DEL-209"
+  },
+  "reconciliation": {
+    "invoice_id": "INV-1048",
+    "buyer_name": "Aarav Industrial Supplies",
+    "currency": "INR",
+    "invoice_amount": 48000,
+    "recorded_payments": 30000,
+    "approved_credits": 0,
+    "recorded_balance": 18000,
+    "unit_price": 400,
+    "invoiced_quantity": 120,
+    "accepted_quantity": 110,
+    "disputed_quantity": 10,
+    "potential_credit_amount": 4000,
+    "note": "Recorded balance calculated before any unapproved credit adjustments"
+  },
+  "findings": [
+    {
+      "finding_id": "FND-2026-001",
+      "claim_id": "CLM-001",
+      "statement": "Delivery quantity discrepancy of 10 units between Invoice INV-1048 (120 units) and Delivery Receipt DEL-209 (110 units).",
+      "status": "CONFLICTING_RECORDS",
+      "source_record_ids": [
+        "INV-1048",
+        "DEL-209"
+      ],
+      "calculation": {
+        "expression": "120 - 110",
+        "result": 10,
+        "unit": "units"
+      },
+      "assumptions": [
+        "Invoice INV-1048 and Proof of Delivery DEL-209 refer to the same consignment line-item ITEM-STEEL-BRG-12."
+      ],
+      "limitations": [
+        "Physical condition of goods or cause of difference cannot be established from shipping documentation alone."
+      ],
+      "next_step": "Confirm delivery acceptance record with warehouse operator before approving credit adjustment."
+    },
+    {
+      "finding_id": "FND-2026-002",
+      "claim_id": "CLM-002",
+      "statement": "Part payment of ₹30,000 is verified and recorded against Invoice INV-1048.",
+      "status": "SUPPORTED_BY_RECORDS",
+      "source_record_ids": [
+        "PAY-771",
+        "INV-1048"
+      ],
+      "calculation": {
+        "expression": "48000 - 30000",
+        "result": 18000,
+        "unit": "INR"
+      },
+      "assumptions": [
+        "Bank reference UTR-SBIN-88912-AARAV is verified and credited against INV-1048."
+      ],
+      "limitations": [],
+      "next_step": null
+    },
+    {
+      "finding_id": "FND-2026-003",
+      "claim_id": "CLM-003",
+      "statement": "No authorised credit note found in supplied records for the requested 10-unit deduction (₹4,000).",
+      "status": "NOT_FOUND_IN_PROVIDED_DATA",
+      "source_record_ids": [
+        "INV-1048"
+      ],
+      "calculation": null,
+      "assumptions": [
+        "Credit note search scoped to commercial records provided in active dataset."
+      ],
+      "limitations": [
+        "Absence in supplied dataset does not prove a credit note does not exist in an external system or pending approval."
+      ],
+      "next_step": "Check accounts receivable queue to determine if a credit note has been initiated."
+    },
+    {
+      "finding_id": "FND-2026-004",
+      "claim_id": "CLM-004",
+      "statement": "Root cause of 10-unit variance (dispatch shortage vs carrier transit loss vs dock rejection) cannot be resolved from supplied records.",
+      "status": "UNRESOLVED",
+      "source_record_ids": [
+        "INV-1048",
+        "DEL-209"
+      ],
+      "calculation": null,
+      "assumptions": [
+        "No transporter carrier damage receipt or bilty shortage endorsement provided."
+      ],
+      "limitations": [
+        "Documentation confirms accepted quantity was 110, but provides no transit loss inspection record."
+      ],
+      "next_step": "Request transporter consignment endorsement and dock discrepancy log."
+    }
+  ],
+  "source_records": {
+    "invoices": [
+      {
+        "record_id": "INV-1048",
+        "date": "2026-10-13",
+        "order_id": "ORD-1048",
+        "item_id": "ITEM-STEEL-BRG-12",
+        "item_description": "Precision Steel Bearings (12mm)",
+        "quantity": 120,
+        "unit": "units",
+        "unit_price": 400,
+        "total_amount": 48000
+      }
+    ],
+    "deliveries": [
+      {
+        "record_id": "DEL-209",
+        "date": "2026-10-14",
+        "order_id": "ORD-1048",
+        "invoice_id": "INV-1048",
+        "delivered_quantity": 110,
+        "accepted_quantity": 110,
+        "unit": "units",
+        "signatory": "R. Sharma (Receiving Dock 2)"
+      }
+    ],
+    "payments": [
+      {
+        "record_id": "PAY-771",
+        "date": "2026-10-16",
+        "invoice_id": "INV-1048",
+        "amount": 30000,
+        "payment_method": "NEFT/RTGS",
+        "reference": "UTR-SBIN-88912-AARAV"
+      }
+    ],
+    "credit_notes": []
+  },
+  "processing_mode": "hybrid",
+  "metadata": {
+    "generated_at": "2026-10-17T09:00:00Z",
+    "environment": "synthetic_benchmark",
+    "dispute_type": "short_delivery"
+  }
+}
